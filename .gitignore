@@ -13,3 +13,5 @@ venv/
 
 
 dashboard/*.autosave
+
+.env
