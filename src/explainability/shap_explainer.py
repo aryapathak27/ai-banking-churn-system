@@ -1,31 +1,34 @@
 import shap
 
 
-def create_shap_explainer(model):
+def create_shap_explainer(model, X_background):
     """
-    Create SHAP TreeExplainer for XGBoost.
+    Create SHAP Explainer.
     """
-    return shap.TreeExplainer(model)
+    return shap.Explainer(model.predict_proba, X_background)
 
 
-def explain_customer(explainer, X):
+def explain_customer(explainer, customer):
     """
-    Generate SHAP values.
+    Explain a single customer.
     """
-    return explainer.shap_values(X)
+    return explainer(customer)
 
 
 def plot_summary(explainer, X):
     """
-    Plot SHAP summary plot.
-    """
-    shap_values = explainer.shap_values(X)
-    shap.summary_plot(shap_values, X)
-
-
-def plot_waterfall(explainer, X):
-    """
-    Plot SHAP waterfall plot for one customer.
+    Global SHAP Summary Plot.
     """
     shap_values = explainer(X)
-    shap.plots.waterfall(shap_values[0])
+    shap.plots.beeswarm(shap_values[:, :, 1])
+
+
+def plot_waterfall(explainer, customer):
+    """
+    Waterfall plot for a single customer.
+    """
+    shap_values = explainer(customer)
+
+    shap.plots.waterfall(
+        shap_values[0, :, 1]
+    )
